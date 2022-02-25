@@ -1,6 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:json_to_dart/src/controller/controller.dart';
-import 'package:provider/provider.dart';
+import 'package:json_to_dart/export.dart';
 
 class SettingSheet extends StatelessWidget {
   const SettingSheet({Key? key}) : super(key: key);
@@ -16,14 +14,14 @@ class SettingSheet extends StatelessWidget {
               margin: const EdgeInsets.only(top: 15),
               decoration: BoxDecoration(color: Colors.grey.withOpacity(0.1), borderRadius: BorderRadius.circular(5)),
               child: TextField(
-                  controller: context.read<JsonToDartController>().fileHeaderController,
                   maxLines: 20,
-                  decoration:  InputDecoration(
-                    border: InputBorder.none,
-                    contentPadding: const EdgeInsets.all(15),
-                    hintText: '添加Copyright信息',
-                    hintStyle: TextStyle(color: Colors.grey[400])
-                  ))),
+                  controller: context.read<JsonToDartController>().copyrightController,
+                  onChanged: context.read<JsonToDartController>().onCopyrightChanged,
+                  decoration: InputDecoration(
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.all(15),
+                      hintText: '添加Copyright信息',
+                      hintStyle: TextStyle(color: Colors.grey[400])))),
         )
       ]));
 
@@ -32,6 +30,11 @@ class SettingSheet extends StatelessWidget {
           label: '添加@JsonKey注解',
           valueKey: const ValueKey('JsonKey'),
           checked: context.read<JsonToDartController>().enableJsonKey,
+        ),
+        CheckBoxItem(
+          label: '使用驼峰命名',
+          valueKey: const ValueKey('CamelCase'),
+          checked: context.read<JsonToDartController>().enableCamelCase,
         ),
         CheckBoxItem(
           label: '添加复制方法',

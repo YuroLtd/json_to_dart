@@ -1,7 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
-import '../controller/controller.dart';
+import 'package:json_to_dart/export.dart';
 
 class HomeRight extends StatelessWidget {
   const HomeRight({Key? key}) : super(key: key);
@@ -11,17 +8,19 @@ class HomeRight extends StatelessWidget {
         _buildOptions(context),
         Expanded(
           child: Container(
-            width: double.infinity,
-            margin: const EdgeInsets.symmetric(vertical: 20),
-            padding: const EdgeInsets.all(15),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey, width: 0.5),
-              borderRadius: BorderRadius.circular(5),
-            ),
-            child: ValueListenableBuilder<String>(
-                valueListenable: context.read<JsonToDartController>().output,
-                builder: (context, value, child) => Text(value)),
-          ),
+              width: double.infinity,
+              margin: const EdgeInsets.symmetric(vertical: 20),
+              padding: const EdgeInsets.only(left: 15,top: 15,bottom: 15),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey, width: 0.5),
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                child: ValueListenableBuilder<String>(
+                    valueListenable: context.read<JsonToDartController>().output,
+                    builder: (context, value, child) => Text(value)),
+              )),
         ),
         ElevatedButton(onPressed: context.read<JsonToDartController>().copyToClipboard, child: const Text('复制'))
       ]);
@@ -37,7 +36,7 @@ class HomeRight extends StatelessWidget {
                     controller: context.read<JsonToDartController>().nameController,
                     onChanged: context.read<JsonToDartController>().onNameChanged,
                     decoration: const InputDecoration(
-                      contentPadding: EdgeInsets.zero,
+                      contentPadding: EdgeInsets.symmetric(horizontal: 15),
                       border: OutlineInputBorder(),
                     ))),
           ),

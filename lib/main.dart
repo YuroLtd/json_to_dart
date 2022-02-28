@@ -1,6 +1,3 @@
-import 'package:flutter/material.dart';
-
-
 import 'package:json_to_dart/export.dart';
 
 void main() => runApp(Provider(

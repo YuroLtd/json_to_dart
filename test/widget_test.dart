@@ -5,20 +5,20 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
-import 'dart:convert';
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:json_to_dart/main.dart';
-
+// ignore_for_file:avoid_print
 void main() {
-  test('description', (){
+  test('description', () {
     String str = 'abc__def';
     final sb = StringBuffer();
-   final list = str.split('_').where((element) => element.isNotEmpty).map((e) => '${e[0].toUpperCase()}${e.substring(1)}').toList();
-    for(int i = 0; i < list.length; i++) {
-      sb.write(i==0?list[0].toLowerCase():list[i]);
+    final list = str
+        .split('_')
+        .where((element) => element.isNotEmpty)
+        .map((e) => '${e[0].toUpperCase()}${e.substring(1)}')
+        .toList();
+    for (int i = 0; i < list.length; i++) {
+      sb.write(i == 0 ? list[0].toLowerCase() : list[i]);
     }
 
     print(sb.toString());

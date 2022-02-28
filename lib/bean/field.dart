@@ -1,4 +1,3 @@
-import 'package:json_to_dart/export.dart';
 
 class Field {
   final String key;

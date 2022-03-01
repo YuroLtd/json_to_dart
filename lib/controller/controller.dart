@@ -11,13 +11,18 @@ class JsonToDartController {
   static const String COPY_METHOD = 'copy_method';
   static const String CAMEL_CASE = 'camel_case';
   static const String COPYRIGHT = 'copyright';
+  static const String FINAL_FIELD = 'final_field';
+  static const String NAMED_CONSTRUCTOR = 'named_constructor';
 
   final enableJsonKey = ValueNotifier<bool>(false);
+  final enableFinalField = ValueNotifier<bool>(false);
+  final enableNamedConstructor = ValueNotifier<bool>(false);
   final enableCopyMethod = ValueNotifier<bool>(false);
   final enableCamelCase = ValueNotifier<bool>(false);
-  final copyrightController = TextEditingController();
 
+  final copyrightController = TextEditingController();
   final nameController = TextEditingController();
+
   final inputController = TextEditingController();
   final output = ValueNotifier<String>('');
 
@@ -29,6 +34,8 @@ class JsonToDartController {
       prefs = await SharedPreferences.getInstance();
 
       enableJsonKey.value = prefs.getBool(JSON_KEY) ?? true;
+      enableFinalField.value = prefs.getBool(FINAL_FIELD) ?? false;
+      enableNamedConstructor.value = prefs.getBool(NAMED_CONSTRUCTOR) ?? false;
       enableCopyMethod.value = prefs.getBool(COPY_METHOD) ?? false;
       enableCamelCase.value = prefs.getBool(CAMEL_CASE) ?? true;
       copyrightController.text = prefs.getString(COPYRIGHT) ?? '';
@@ -43,15 +50,23 @@ class JsonToDartController {
 
   void onCheckBoxValueChanged(String key, bool value) {
     switch (key) {
-      case 'JsonKey':
+      case JSON_KEY:
         enableJsonKey.value = value;
         prefs.setBool(JSON_KEY, value);
         break;
-      case 'CopyMethod':
+      case FINAL_FIELD:
+        enableFinalField.value = value;
+        prefs.setBool(FINAL_FIELD, value);
+        break;
+      case NAMED_CONSTRUCTOR:
+        enableNamedConstructor.value = value;
+        prefs.setBool(NAMED_CONSTRUCTOR, value);
+        break;
+      case COPY_METHOD:
         enableCopyMethod.value = value;
         prefs.setBool(COPY_METHOD, value);
         break;
-      case 'CamelCase':
+      case CAMEL_CASE:
         enableCamelCase.value = value;
         prefs.setBool(CAMEL_CASE, value);
         break;
@@ -206,11 +221,19 @@ class JsonToDartController {
     final camelCase = enableCamelCase.value;
     clazz.fields.forEach((element) => _generateField(sb, element, camelCase));
 
-    sb.writeln('${clazz.name}({');
+    sb
+      ..write('${clazz.name}(')
+      ..write((enableNamedConstructor.value && clazz.fields.isNotEmpty) ? '{' : '')
+      ..write('\n');
     for (final field in clazz.fields) {
-      sb.writeln('${field.nullable ? '' : 'required'} this.${field.getName(camelCase)},');
+      sb
+        ..write((enableNamedConstructor.value && field.type != 'dynamic' && !field.nullable) ? 'required ' : '')
+        ..write('this.${field.getName(camelCase)}')
+        ..write(',\n');
     }
-    sb.writeln('});');
+    sb
+      ..write((enableNamedConstructor.value && clazz.fields.isNotEmpty) ? '}' : '')
+      ..write(');\n');
 
     sb.writeln();
     sb.writeln('factory ${clazz.name}.fromJson(Map<String, dynamic> srcJson) => _\$${clazz.name}FromJson(srcJson);');
@@ -227,7 +250,11 @@ class JsonToDartController {
     if (enableJsonKey.value) {
       sb.writeln("@JsonKey(name: '${field.key}')");
     }
-    sb.writeln('final ${field.type}${field.nullable ? '?' : ''} ${field.getName(camelCase)};');
+    sb
+      ..write(enableFinalField.value ? 'final ' : '')
+      ..write('${field.type}${field.nullable ? '? ' : ' '}')
+      ..write(field.getName(camelCase))
+      ..write(';\n');
     sb.writeln();
   }
 

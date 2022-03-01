@@ -28,17 +28,27 @@ class SettingSheet extends StatelessWidget {
   Widget _buildSettings(BuildContext context) => Wrap(spacing: 20, runSpacing: 20, children: [
         CheckBoxItem(
           label: '添加@JsonKey注解',
-          valueKey: const ValueKey('JsonKey'),
+          valueKey: const ValueKey(JsonToDartController.JSON_KEY),
           checked: context.read<JsonToDartController>().enableJsonKey,
         ),
         CheckBoxItem(
+          label: '使用final字段',
+          valueKey: const ValueKey(JsonToDartController.FINAL_FIELD),
+          checked: context.read<JsonToDartController>().enableFinalField,
+        ),
+        CheckBoxItem(
+          label: '使用命名构造函数',
+          valueKey: const ValueKey(JsonToDartController.NAMED_CONSTRUCTOR),
+          checked: context.read<JsonToDartController>().enableNamedConstructor,
+        ),
+        CheckBoxItem(
           label: '使用驼峰命名',
-          valueKey: const ValueKey('CamelCase'),
+          valueKey: const ValueKey(JsonToDartController.CAMEL_CASE),
           checked: context.read<JsonToDartController>().enableCamelCase,
         ),
         CheckBoxItem(
           label: '添加复制方法',
-          valueKey: const ValueKey('CopyMethod'),
+          valueKey: const ValueKey(JsonToDartController.COPY_METHOD),
           checked: context.read<JsonToDartController>().enableCopyMethod,
         ),
       ]);

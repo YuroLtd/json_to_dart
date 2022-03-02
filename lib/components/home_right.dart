@@ -19,7 +19,7 @@ class HomeRight extends StatelessWidget {
                 physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
                 child: ValueListenableBuilder<String>(
                     valueListenable: context.read<JsonToDartController>().output,
-                    builder: (context, value, child) => Text(value)),
+                    builder: (context, value, child) => SelectableText(value)),
               )),
         ),
         ElevatedButton(onPressed: context.read<JsonToDartController>().copyToClipboard, child: const Text('复制'))

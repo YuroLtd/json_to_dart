@@ -1,8 +1,8 @@
 import 'dart:convert';
 
+import 'package:dart_style/dart_style.dart';
 import 'package:flutter/services.dart';
 import 'package:json_to_dart/export.dart';
-import 'package:dart_style/dart_style.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class JsonToDartController {
@@ -136,7 +136,7 @@ class JsonToDartController {
     // json以Map开始
     if (jsonObject is Map) {
       final clazz = _parseMap(Map<String, dynamic>.from(jsonObject), key);
-      clazzList.add(clazz);
+      addClazz(clazz);
     }
     // json 以List开始
     else if (jsonObject is List) {
@@ -144,6 +144,15 @@ class JsonToDartController {
     }
     // 生成代码
     if (clazzList.isNotEmpty) _generateCode();
+  }
+
+  void addClazz(Clazz clazz) {
+    final containsList = clazzList.where((e) => e.key == clazz.key);
+    if (containsList.isNotEmpty) {
+      containsList.first.merge(clazz);
+    } else {
+      clazzList.add(clazz);
+    }
   }
 
   Clazz _parseMap(Map<String, dynamic> map, String key) {
@@ -156,7 +165,7 @@ class JsonToDartController {
       // Map类型
       else if (value is Map) {
         final subClazz = _parseMap(Map<String, dynamic>.from(value), key);
-        clazzList.add(subClazz);
+        addClazz(subClazz);
         clazz.fields.add(Field(key: key, type: subClazz.name));
       }
       // List类型
@@ -183,12 +192,7 @@ class JsonToDartController {
         late Clazz subClazz;
         for (final element in list) {
           subClazz = _parseMap(Map<String, dynamic>.from(element), key);
-          final containsList = clazzList.where((e) => e.key == subClazz.key);
-          if (containsList.isNotEmpty) {
-            containsList.first.merge(subClazz);
-          } else {
-            clazzList.add(subClazz);
-          }
+          addClazz(subClazz);
         }
         return Field(key: key, type: 'List<${subClazz.name}>');
       }
@@ -252,7 +256,8 @@ class JsonToDartController {
     }
     sb
       ..write(enableFinalField.value ? 'final ' : '')
-      ..write('${field.type}${field.nullable ? '? ' : ' '}')
+      ..write(field.type)
+      ..write(!field.isDynamic && field.nullable ? '? ' : ' ')
       ..write(field.getName(camelCase))
       ..write(';\n');
     sb.writeln();

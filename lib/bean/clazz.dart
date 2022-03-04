@@ -45,10 +45,11 @@ extension ClazzExt on Clazz {
         final originField = list.first;
         // 如果字段类型不一致
         if (originField.type != field.type) {
-          if (originField.type == 'dynamic' || field.type == 'dynamic') {
+          if (originField.isDynamic || field.isDynamic) {
+            if (!field.isDynamic) originField.type = field.type;
             originField.nullable = true;
           }
-          if (originField.type == 'int' && field.type == 'double') {
+          if (originField.isInt && field.isDouble) {
             originField.type = 'double';
           }
         }

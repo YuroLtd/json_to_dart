@@ -1,4 +1,3 @@
-
 class Field {
   final String key;
   String type;
@@ -29,4 +28,10 @@ extension FieldExt on Field {
     }
     return _name ??= key;
   }
+
+  bool get isDynamic => type == 'dynamic';
+
+  bool get isInt => type == 'int';
+
+  bool get isDouble => type == 'double';
 }

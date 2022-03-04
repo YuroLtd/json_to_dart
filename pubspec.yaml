@@ -94,7 +94,7 @@ msix_config:
   display_name: json_to_dart
   publisher_display_name: YuroLtd
   identity_name: com.yuro.jsonToDart
-  msix_version: 1.1.0.0
+  msix_version: 1.1.1.0
   logo_path: json_to_dart.png
   certificate_path: yutoltd.pfx
   certificate_password: yuroltd

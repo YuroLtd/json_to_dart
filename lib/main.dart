@@ -21,19 +21,20 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-          body: Stack(children: [
-        Center(
-            child: SizedBox(
-                width: MediaQuery.of(context).size.width * 0.9,
-                height: MediaQuery.of(context).size.height * 0.9,
-                child: Row(children: [
-                  const Expanded(flex: 1, child: HomeLeft()),
-                  SizedBox(width: MediaQuery.of(context).size.width * 0.05),
-                  const Expanded(flex: 1, child: HomeRight()),
-                ]))),
-        const Align(
-          alignment: Alignment.bottomCenter,
-          child: Padding(padding: EdgeInsets.all(8), child: Text('Copyright 2022 by YuroLtd.')),
-        )
-      ]));
+        body: Stack(children: [
+          Center(
+              child: SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.9,
+                  height: MediaQuery.of(context).size.height * 0.9,
+                  child: Row(children: [
+                    const Expanded(flex: 1, child: HomeLeft()),
+                    SizedBox(width: MediaQuery.of(context).size.width * 0.05),
+                    const Expanded(flex: 1, child: HomeRight()),
+                  ]))),
+          const Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(padding: EdgeInsets.all(8), child: Text('Copyright 2022 by YuroLtd.')),
+          )
+        ]),
+      );
 }

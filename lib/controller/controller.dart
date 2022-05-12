@@ -3,81 +3,58 @@ import 'dart:convert';
 import 'package:dart_style/dart_style.dart';
 import 'package:flutter/services.dart';
 import 'package:json_to_dart/export.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class JsonToDartController {
   // ignore_for_file: constant_identifier_names
+  static const String FILE_HEADER = 'file_header';
   static const String JSON_KEY = 'json_key';
   static const String COPY_METHOD = 'copy_method';
   static const String CAMEL_CASE = 'camel_case';
-  static const String COPYRIGHT = 'copyright';
   static const String FINAL_FIELD = 'final_field';
   static const String NAMED_CONSTRUCTOR = 'named_constructor';
+  static const String EQUATABLE = 'equatable';
 
-  final enableJsonKey = ValueNotifier<bool>(false);
-  final enableFinalField = ValueNotifier<bool>(false);
+  final enableFileHeader = ValueNotifier<bool>(true);
+  final enableJsonKey = ValueNotifier<bool>(true);
+  final enableFinalField = ValueNotifier<bool>(true);
   final enableNamedConstructor = ValueNotifier<bool>(false);
   final enableCopyMethod = ValueNotifier<bool>(false);
-  final enableCamelCase = ValueNotifier<bool>(false);
+  final enableCamelCase = ValueNotifier<bool>(true);
+  final enableEquatable = ValueNotifier<bool>(false);
 
-  final copyrightController = TextEditingController();
   final nameController = TextEditingController();
 
   final inputController = TextEditingController();
   final output = ValueNotifier<String>('');
 
   final clazzList = <Clazz>[];
-  late final SharedPreferences prefs;
-
-  JsonToDartController() {
-    Future(() async {
-      prefs = await SharedPreferences.getInstance();
-
-      enableJsonKey.value = prefs.getBool(JSON_KEY) ?? true;
-      enableFinalField.value = prefs.getBool(FINAL_FIELD) ?? false;
-      enableNamedConstructor.value = prefs.getBool(NAMED_CONSTRUCTOR) ?? false;
-      enableCopyMethod.value = prefs.getBool(COPY_METHOD) ?? false;
-      enableCamelCase.value = prefs.getBool(CAMEL_CASE) ?? true;
-      copyrightController.text = prefs.getString(COPYRIGHT) ?? '';
-    });
-  }
-
-  /// 显示设置面板
-  void showSetting(BuildContext context) => showModalBottomSheet(
-        context: context,
-        builder: (context) => const SettingSheet(),
-      );
 
   void onCheckBoxValueChanged(String key, bool value) {
     switch (key) {
+      case FILE_HEADER:
+        enableFileHeader.value = value;
+        break;
       case JSON_KEY:
         enableJsonKey.value = value;
-        prefs.setBool(JSON_KEY, value);
         break;
       case FINAL_FIELD:
         enableFinalField.value = value;
-        prefs.setBool(FINAL_FIELD, value);
         break;
       case NAMED_CONSTRUCTOR:
         enableNamedConstructor.value = value;
-        prefs.setBool(NAMED_CONSTRUCTOR, value);
         break;
       case COPY_METHOD:
         enableCopyMethod.value = value;
-        prefs.setBool(COPY_METHOD, value);
         break;
       case CAMEL_CASE:
         enableCamelCase.value = value;
-        prefs.setBool(CAMEL_CASE, value);
+        break;
+      case EQUATABLE:
+        enableEquatable.value = value;
         break;
       default:
         break;
     }
-    if (clazzList.isNotEmpty) _generateCode();
-  }
-
-  void onCopyrightChanged(String str) {
-    prefs.setString(COPYRIGHT, str);
     if (clazzList.isNotEmpty) _generateCode();
   }
 
@@ -204,13 +181,15 @@ class JsonToDartController {
     final list = clazzList.reversed;
     final sb = StringBuffer();
 
-    if (copyrightController.text.trim().isNotEmpty) {
-      sb.writeln(copyrightController.text.trim());
+    if (enableFileHeader.value) {
+      sb.writeln("import 'package:json_annotation/json_annotation.dart';");
+      if (enableEquatable.value) {
+        sb.writeln("import 'package:equatable/equatable.dart';");
+      }
+      sb.writeln();
+      sb.writeln("part '${list.first.fileName}.g.dart';");
+      sb.writeln();
     }
-    sb.writeln("import 'package:json_annotation/json_annotation.dart';");
-    sb.writeln();
-    sb.writeln("part '${list.first.fileName}.g.dart';");
-    sb.writeln();
 
     // ignore_for_file: avoid_function_literals_in_foreach_calls
     list.forEach((element) => _generateClazz(sb, element));
@@ -219,7 +198,11 @@ class JsonToDartController {
 
   void _generateClazz(StringBuffer sb, Clazz clazz) {
     sb.writeln('@JsonSerializable()');
-    sb.writeln('class ${clazz.name} extends Object {');
+    sb.write('class ${clazz.name} extends Object ');
+    if (enableEquatable.value) {
+      sb.writeln('with EquatableMixin');
+    }
+    sb.write('{');
     sb.writeln();
 
     final camelCase = enableCamelCase.value;
@@ -237,12 +220,19 @@ class JsonToDartController {
     }
     sb
       ..write((enableNamedConstructor.value && clazz.fields.isNotEmpty) ? '}' : '')
-      ..write(');\n');
+      ..write(');\n')
+      ..writeln()
+      ..writeln('factory ${clazz.name}.fromJson(Map<String, dynamic> srcJson) => _\$${clazz.name}FromJson(srcJson);')
+      ..writeln()
+      ..writeln('Map<String, dynamic> toJson() => _\$${clazz.name}ToJson(this);');
 
-    sb.writeln();
-    sb.writeln('factory ${clazz.name}.fromJson(Map<String, dynamic> srcJson) => _\$${clazz.name}FromJson(srcJson);');
-    sb.writeln();
-    sb.writeln('Map<String, dynamic> toJson() => _\$${clazz.name}ToJson(this);');
+    if (enableEquatable.value) {
+      sb
+        ..writeln()
+        ..writeln('@override')
+        ..writeln('List<Object> get props =>')
+        ..writeln('${clazz.fields.map((e) => e.getName(camelCase)).toList()};');
+    }
 
     if (enableCopyMethod.value) _generateCopyWith(sb, clazz, camelCase);
 

@@ -34,7 +34,6 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   provider: ^6.0.2
-  shared_preferences: ^2.0.13
   dart_style: ^2.2.1
 
 dev_dependencies:
@@ -47,7 +46,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^1.0.0
-  msix: ^3.2.0
+  msix: ^3.6.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -94,7 +93,7 @@ msix_config:
   display_name: json_to_dart
   publisher_display_name: YuroLtd
   identity_name: com.yuro.jsonToDart
-  msix_version: 1.1.1.0
+  msix_version: 1.2.0.0
   logo_path: json_to_dart.png
   certificate_path: yutoltd.pfx
   certificate_password: yuroltd

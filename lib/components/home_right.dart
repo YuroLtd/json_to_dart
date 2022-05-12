@@ -40,10 +40,6 @@ class HomeRight extends StatelessWidget {
                       border: OutlineInputBorder(),
                     ))),
           ),
-        ),
-        ElevatedButton(
-          onPressed: () => context.read<JsonToDartController>().showSetting(context),
-          child: const Text('设置'),
         )
       ]);
 }

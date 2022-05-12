@@ -4,28 +4,12 @@ class SettingSheet extends StatelessWidget {
   const SettingSheet({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) => Container(
-      height: MediaQuery.of(context).size.height * 0.3,
-      padding: const EdgeInsets.all(15),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        _buildSettings(context),
-        Expanded(
-          child: Container(
-              margin: const EdgeInsets.only(top: 15),
-              decoration: BoxDecoration(color: Colors.grey.withOpacity(0.1), borderRadius: BorderRadius.circular(5)),
-              child: TextField(
-                  maxLines: 20,
-                  controller: context.read<JsonToDartController>().copyrightController,
-                  onChanged: context.read<JsonToDartController>().onCopyrightChanged,
-                  decoration: InputDecoration(
-                      border: InputBorder.none,
-                      contentPadding: const EdgeInsets.all(15),
-                      hintText: '添加Copyright信息',
-                      hintStyle: TextStyle(color: Colors.grey[400])))),
-        )
-      ]));
-
-  Widget _buildSettings(BuildContext context) => Wrap(spacing: 20, runSpacing: 20, children: [
+  Widget build(BuildContext context) => Wrap(spacing: 20, runSpacing: 20, children: [
+        CheckBoxItem(
+          label: '生成文件头',
+          valueKey: const ValueKey(JsonToDartController.FILE_HEADER),
+          checked: context.read<JsonToDartController>().enableFileHeader,
+        ),
         CheckBoxItem(
           label: '添加@JsonKey注解',
           valueKey: const ValueKey(JsonToDartController.JSON_KEY),
@@ -50,6 +34,11 @@ class SettingSheet extends StatelessWidget {
           label: '添加复制方法',
           valueKey: const ValueKey(JsonToDartController.COPY_METHOD),
           checked: context.read<JsonToDartController>().enableCopyMethod,
+        ),
+        CheckBoxItem(
+          label: 'Equatable支持',
+          valueKey: const ValueKey(JsonToDartController.EQUATABLE),
+          checked: context.read<JsonToDartController>().enableEquatable,
         ),
       ]);
 }
